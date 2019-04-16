@@ -6,12 +6,12 @@
 
 int main()
 {
-    uint32_t i = 0;     
-    for(i = 0; i < 48; i++) {
-        *((uint32_t*)(0x20000000 + (i << 2)))=*(__IO uint32_t*)(APPLICATION_ADDRESS + (i << 2));
-    }
-    RCC->APB2ENR |= 1;
-    SYSCFG->CFGR |= 0x03;
+//    uint32_t i = 0;     
+//    for(i = 0; i < 48; i++) {
+//        *((uint32_t*)(0x20000000 + (i << 2)))=*(__IO uint32_t*)(APPLICATION_ADDRESS + (i << 2));
+//    }
+//    RCC->APB2ENR |= 1;
+//    SYSCFG->CFGR |= 0x03;
     Led_Init();
 
     while (1) {

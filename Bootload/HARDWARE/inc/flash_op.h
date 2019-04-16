@@ -24,7 +24,7 @@ extern void Flash_Read(uint32_t ReadAddr, uint16_t *phwBuffer, uint16_t NumToRea
 //FLASH 选项字节半字编程操作
 //wAddress：选项字节地址
 //hwData：要写入的数据
-FLASH_Status FLASH_ProgramOptionHalfWord(uint32_t wAddress, uint16_t hwData);
+FLASH_Status Flash_ProgramOptionHalfWord(uint32_t wAddress, uint16_t hwData);
 //使能整片读保护
-extern void FLASH_ReadOut_Protection(void);
+extern void Flash_ReadOut_Protection(void);
 #endif

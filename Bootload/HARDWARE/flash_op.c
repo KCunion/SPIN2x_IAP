@@ -48,7 +48,7 @@ bool Flash_Write_Check(uint32_t wWriteAddr, uint16_t *phwBuffer, uint16_t hwNumb
     return true;
 }
 
-FLASH_Status FLASH_ProgramOptionHalfWord(uint32_t wAddress, uint16_t hwData)
+FLASH_Status Flash_ProgramOptionHalfWord(uint32_t wAddress, uint16_t hwData)
 {
     FLASH_Status tStatus = FLASH_COMPLETE;
     tStatus = FLASH_WaitForLastOperation(0x00000FFF);
@@ -77,11 +77,10 @@ FLASH_Status FLASH_ProgramOptionHalfWord(uint32_t wAddress, uint16_t hwData)
     return tStatus;
 }
 
-void FLASH_ReadOut_Protection(void)
+void Flash_ReadOut_Protection(void)
 {
     FLASH_Unlock();
-    FLASH_ProgramOptionHalfWord(0x1FFE0000, 0x7F80);
-    FLASH_ProgramOptionHalfWord(0x1FFE0002, 0xFF00);
-    FLASH_EraseOptionBytes();
+    Flash_ProgramOptionHalfWord(0x1FFE0000, 0x7F80);
+    Flash_ProgramOptionHalfWord(0x1FFE0002, 0xFF00);
     FLASH_Lock();
 }

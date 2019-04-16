@@ -5,17 +5,21 @@
 #include "key.h"
 #include "iap.h"
 #include "module.h"
+#include "flash_op.h"
 
-static struct {
+struct {
     uint32_t wAppAddr;
     uint16_t hwAppLenth;
-    event_t tReceivedEvent;
     uint8_t chKeyVal;
-} s_tAppControlBlock = {
-    0x08010000,
-    0,
-    AUTO,RESET,
-    0
+    event_t tReceivedEvent;
+    bool bProtectFlag;
+}static s_tAppControlBlock = {
+    .wAppAddr = 0x08010000,
+    .hwAppLenth = 0,
+    .chKeyVal = 0,
+    .tReceivedEvent.bAutoReset = AUTO,
+    .tReceivedEvent.bIsSet = RESET,
+    .bProtectFlag = true
 };
 
 static fsm_rt_t Received_App(void);                     //判断APP代码是否接收完成
@@ -29,11 +33,14 @@ int main()
     Led_Init();
     Key_Init();
     Uart1_Init(9600);
+    if (false != s_tAppControlBlock.bProtectFlag ) {
+        Flash_ReadOut_Protection();
+    }
     printf("等待下发用户应用程序!\r\n");
     while (1) {
         Breath_Led();
 
-        if (fsm_rt_cpl == Received_App()) {
+        if (fsm_rt_cpl == Received_App()) {                 //检查APP是否接收完成
             SET_EVENT(&s_tAppControlBlock.tReceivedEvent);
         }
 
@@ -72,36 +79,36 @@ static fsm_rt_t Received_App(void)
     switch (s_tReceived.tState) {
         case START:
             s_tReceived.tState = RECEIVED;
-            s_tReceived.chDelay = 255;
+            s_tReceived.chDelay = 0XFF;                 //初始化delay次数
             //break;
         case RECEIVED:
-            if (g_hwUartRxCnt) {
+            if (g_hwUartRxCnt) {                        //UART开始接收数据
                 s_tReceived.hwLastCount = g_hwUartRxCnt;
                 s_tReceived.tState = DELAY;
             }
             break;
         case DELAY:
-            if (-- s_tReceived.chDelay < 1) {
+            if (-- s_tReceived.chDelay < 1) {           //延时等待接收完成
                 s_tReceived.tState = REC_COMPLETE;
             }
             break;
         case REC_COMPLETE:
-            if (s_tReceived.hwLastCount == g_hwUartRxCnt) {
+            if (s_tReceived.hwLastCount == g_hwUartRxCnt) { //接收完成(延时结束后UART接收计数未变化)
                 APP_RECEIVED_FSM_RESET();
                 s_tAppControlBlock.hwAppLenth = g_hwUartRxCnt;
                 s_tReceived.hwLastCount = 0;
                 g_hwUartRxCnt = 0;
                 printf("用户程序接收完成!\r\n");
                 printf("代码长度:%dBytes\r\n", s_tAppControlBlock.hwAppLenth);
-                return fsm_rt_cpl;
+                return fsm_rt_cpl;                          //状态机已完成
             } else {
-                s_tReceived.hwLastCount = g_hwUartRxCnt;
-                s_tReceived.chDelay = 255;
+                s_tReceived.hwLastCount = g_hwUartRxCnt;    //接收未完成(延时结束后UART接收计数发生变化)
+                s_tReceived.chDelay = 0XFF;                 //重新进入延时等待
                 s_tReceived.tState = DELAY;
             }
             break;
     }
-    return fsm_rt_on_going;
+    return fsm_rt_on_going;                                 //状态机运行中
 }
 
 static void Upgrade_Firmware(event_t *ptReceived)
