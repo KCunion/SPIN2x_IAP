@@ -32,9 +32,9 @@ static void Set_Led_Gradation(uint16_t hwLevel)
     static uint16_t s_hwCounter = 0;
 
     if (hwLevel >= s_hwCounter) {
-        LED2_ON();
+        LED3_ON();
     } else {
-        LED2_OFF();
+        LED3_OFF();
     }
 
     s_hwCounter++;

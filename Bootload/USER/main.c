@@ -14,12 +14,12 @@ struct {
     event_t tReceivedEvent;
     bool bProtectFlag;
 }static s_tAppControlBlock = {
-    .wAppAddr = 0x08010000,                             //APP 地址
-    .hwAppLenth = 0,                                    //APP大小
-    .chKeyVal = 0,                                      //按键键值
-    .tReceivedEvent.bAutoReset = AUTO,                  //事件接收后自动复位
-    .tReceivedEvent.bIsSet = RESET,                     //无事件
-    .bProtectFlag = true                                //是否打开读保护
+    .wAppAddr                   = 0x08010000,               //APP 地址
+    .hwAppLenth                 = 0,                        //APP大小
+    .chKeyVal                   = 0,                        //按键键值
+    .tReceivedEvent.bAutoReset  = AUTO,                     //事件接收后自动复位
+    .tReceivedEvent.bIsSet      = RESET,                    //无事件
+    .bProtectFlag               = true,                     //是否打开读保护    false
 };
 
 static fsm_rt_t Received_App(void);                     //判断APP代码是否接收完成

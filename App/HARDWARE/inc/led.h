@@ -4,9 +4,11 @@
 
 #define LED4_ON()       do{ GPIOA->BRR = 0x8000;}while(0)                    // PA15
 #define LED4_OFF()      do{ GPIOA->BSRR = 0x8000;}while(0)                      // PA15
+#define LED4_TOGGLE()   do{ GPIOA->ODR ^= 0x8000;}while(0)
 
 #define LED3_ON()       do{ GPIOB->BRR = 0x0008;}while(0)                     // PB3
 #define LED3_OFF()      do{ GPIOB->BSRR = 0x0008;}while(0)                       // PB3
+#define LED3_TOGGLE()   do{ GPIOB->ODR ^= 0x0008;}while(0)
 
 #define LED2_ON()       do{ GPIOB->BRR = 0x0010;}while(0)                     // PB4
 #define LED2_OFF()      do{ GPIOB->BSRR = 0x0010;}while(0)                       // PB4

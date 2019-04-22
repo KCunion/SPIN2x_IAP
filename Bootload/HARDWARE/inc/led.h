@@ -1,6 +1,8 @@
 #ifndef __LED_H
 #define __LED_H	 
 #include "HAL_device.h"
+#include "HAL_rcc.h"
+#include "HAL_gpio.h"
 
 #define LED4_ON()       do{ GPIO_ResetBits(GPIOA,GPIO_Pin_15);}while(0)                    // PA15
 #define LED4_OFF()      do{ GPIO_SetBits(GPIOA,GPIO_Pin_15);}while(0)                      // PA15

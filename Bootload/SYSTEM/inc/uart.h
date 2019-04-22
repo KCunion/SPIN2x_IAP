@@ -4,7 +4,7 @@
 #include  "stdio.h"
 #include "dtype.h"
 		   
-#define UART_REC_LEN            (3*1024)        //定义最大接收字节数 4K
+#define UART_REC_LEN            (10*1024)        //定义最大接收字节数 4K
 
 extern uint8_t  g_chUartRxBuf[UART_REC_LEN];      //接收缓冲,最大UART_REC_LEN个字节.末字节为换行符
 extern uint16_t g_hwUartRxCnt;                    //接收的字节数

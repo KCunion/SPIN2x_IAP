@@ -23,7 +23,7 @@ struct __FILE
 
 FILE __stdout;       
 
-_sys_exit(int x) 
+void _sys_exit(int x) 
 { 
     x = x; 
 } 
