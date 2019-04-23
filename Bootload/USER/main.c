@@ -1,11 +1,14 @@
-#include "delay.h"
-#include "sys.h"
-#include "led.h"
-#include "uart.h"
-#include "key.h"
-#include "iap.h"
-#include "module.h"
+#include "interrupt_tab.h"
 #include "flash_op.h"
+#include "module.h"
+#include "uart.h"
+#include "iap.h"
+#include "sys.h"
+#include "key.h"
+#include "led.h"
+//define中断处理函数指针列表，存放于0X20000000
+//在process.c中编写，并在Interrupt_Init()中对tNVIC_TABLE结构体进行初始化
+struct NVIC_TABLE_t tNVIC_TABLE __attribute__((at(0X20000000)));
 
 struct {
     uint32_t wAppAddr;
@@ -29,26 +32,25 @@ static void Run_SramCode(void);                         //运行SRAM代码
 
 int main()
 {
-//    delay_init();
     Led_Init();
     Key_Init();
     Uart1_Init(9600);
     if (false != s_tAppControlBlock.bProtectFlag ) {
-        Flash_ReadOut_Protection();
+        Flash_ReadOut_Protection();                     //打开读保护
     }
     printf("等待下发用户应用程序!\r\n");
     while (1) {
-        Breath_Led();
+        Breath_Led();                                   //LED呼吸灯程序
 
         if (fsm_rt_cpl == Received_App()) {                 //检查APP是否接收完成
-            SET_EVENT(&s_tAppControlBlock.tReceivedEvent);
+            SET_EVENT(&s_tAppControlBlock.tReceivedEvent);  //发送ReceivedEvent事件
         }
 
         s_tAppControlBlock.chKeyVal = Key_Scan(0);          //检查按键按下并返回键值
         
         switch (s_tAppControlBlock.chKeyVal) {
             case WKUP_PRES:
-                Upgrade_Firmware(&s_tAppControlBlock.tReceivedEvent);   //更新固件程序
+                Upgrade_Firmware(&s_tAppControlBlock.tReceivedEvent);   //更新固件程序，子函数中等待ReceivedEvent事件
                 break;
             case KEY3_PRES:
                 Run_FlashCode();                                        //运行FLASH代码
@@ -115,7 +117,7 @@ static void Upgrade_Firmware(event_t *ptReceived)
 {
     if (NULL != ptReceived)
     {
-        if (WAIT_EVENT(ptReceived)) {
+        if (WAIT_EVENT(ptReceived)) {                       //等待ptReceived事件
             printf("开始更新固件...\r\n");
             if (((*(__IO uint32_t *)(0X20000600 + 4)) & 0xFF000000) == 0x08000000) {        //判断是否为0X08XXXXXX.
                 Iap_WriteAppBin(s_tAppControlBlock.wAppAddr, g_chUartRxBuf,

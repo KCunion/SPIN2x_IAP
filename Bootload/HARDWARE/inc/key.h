@@ -2,12 +2,6 @@
 #define __KEY_H	 
 #include "sys.h"
 
-//////////////////////////////////////////////////////////////////////////////////	 
-//开发板
-//按键驱动代码	   
-//////////////////////////////////////////////////////////////////////////////////   	 
-
-
 #define KEY1    GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)         //读取按键1
 #define WK_UP   GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)          //读取按键2 
 #define KEY3    GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_10)         //读取按键3

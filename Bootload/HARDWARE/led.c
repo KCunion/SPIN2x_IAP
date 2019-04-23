@@ -2,7 +2,7 @@
 
 #define ABS(__N)    ((__N) < 0 ? -(__N) : (__N))
 #define _BV(__N)    ((uint32_t)1<<(__N))
-#define TOP         (0x02FF)
+#define TOP         (0x01FF)
 
 void Led_Init(void)
 { 
