@@ -4,8 +4,11 @@
 #include "flash_op.h"
 #include "iap.h"
 
-iapfun_t tJumpToApp;
-
+iapfun_t tJumpToApp;        //定义tJumpToApp，App跳转函数
+//应用程序代码写入
+//wAppxAddr:应用程序的起始地址
+//pchAppBuf:应用程序CODE.
+//wAppSize:应用程序大小(字节).
 void Iap_WriteAppBin(uint32_t wAppxAddr, uint8_t *pchAppBuf, uint32_t wAppSize)
 {
     uint8_t chEraseNumber = wAppSize / FLASH_SECTOR_SIZE;   //计算需要擦除页（实际页数 - 1）
@@ -22,7 +25,8 @@ void Iap_WriteAppBin(uint32_t wAppxAddr, uint8_t *pchAppBuf, uint32_t wAppSize)
         FLASH_Lock();                                           //上锁
     }
 }
-
+//跳转到应用程序段
+//wAppxAddr:用户代码起始地址.
 void Iap_LoadApp(uint32_t wAppxAddr)
 {
     if (((*(__IO uint32_t *)wAppxAddr) & 0x2FFE0000) == 0x20000000) {       //检查栈顶地址是否合法.

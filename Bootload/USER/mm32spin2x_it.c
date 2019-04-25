@@ -1,4 +1,3 @@
-#include "mm32spin2x_it.h"
 #include "interrupt_tab.h"
 //中断服务函数，跳转到实际中断处理程序
 void WWDG_IRQHandler(void)

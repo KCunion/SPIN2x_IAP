@@ -1,5 +1,6 @@
 #ifndef __INTERRUPT_TAB_H
-#define __INTERRUPT_TAB_H 			   
+#define __INTERRUPT_TAB_H
+//中断处理函数指针表，在中断服务函数中调用函数指针
 struct NVIC_TABLE_t{
     void (*pinitial_sp);
     void (*pReset_Handler)(void);

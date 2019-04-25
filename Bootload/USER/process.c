@@ -1,14 +1,6 @@
-#include "process.h"
+#include "uart.h" 
+#include "interrupt_tab.h"
 
-void HardFault_Processing(void)
-{
-
-}
-
-void TIM1_Processing(void)
-{
-
-}
 //UART1中断处理程序
 void UART1_Processing(void)
 {
@@ -23,7 +15,7 @@ void UART1_Processing(void)
     }
 }
 //对tNVIC_TABLE进行初始化，将中断处理程序指针赋值
-//进main函数前调用
+//在启动文件中声明，在Reset_Handler中调用，调用位置在main函数前
 void Interrupt_Init(void)
 {
     tNVIC_TABLE.pUART1_Handler = UART1_Processing;

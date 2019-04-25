@@ -16,7 +16,7 @@
 #define LED1_ON()       do{ GPIO_ResetBits(GPIOB,GPIO_Pin_5);}while(0)                     // PB5
 #define LED1_OFF()      do{ GPIO_SetBits(GPIOB,GPIO_Pin_5);}while(0)                       // PB5
 
-extern void Led_Init(void);
-extern void Breath_Led(void);
+extern void Led_Init(void);     //初始化LED相关IO
+extern void Breath_Led(void);   //非阻塞呼吸灯
 
 #endif

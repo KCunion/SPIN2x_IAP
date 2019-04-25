@@ -7,6 +7,7 @@
 #define KEY3    GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_10)         //读取按键3
 #define KEY4    GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_11)         //读取按键4
 
+#define KEY_NONE    0       //无按键按下
 #define KEY1_PRES	1		//KEY1 
 #define WKUP_PRES	2		//WK_UP  
 #define KEY3_PRES	3		//KEY1 

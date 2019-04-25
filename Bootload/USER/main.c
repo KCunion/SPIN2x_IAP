@@ -1,11 +1,32 @@
-#include "interrupt_tab.h"
-#include "flash_op.h"
-#include "module.h"
-#include "uart.h"
-#include "iap.h"
 #include "sys.h"
+#include "uart.h"
 #include "key.h"
 #include "led.h"
+#include "flash_op.h"
+#include "iap.h"
+#include "module.h"
+#include "interrupt_tab.h"
+/******************************************************************************************
+*       程序功能：                IAP Demo
+*       芯片型号：               MM32SPIN27
+*       版本号：                    1.0
+*       作者：                     Shawn
+*       注意事项：
+*       1、本例程仅作为IAP功能参考演示，不得承担因本例程直接或间接导致的任何后果！
+*       2、本例程针对MM32 M0所作：由于读保护下RAM访问FLASH受限，因此读保护后将中断向量表拷贝
+*          到RAM有风险，而本例程不拷贝中断向量表，而是在中断服务函数中跳转到中断处理函数，中
+*          断处理函数指针存放于RAM起始地址0X20000000，跳转到APP函数后修改函数指针以达到切换中
+*          断处理函数的目的，细节参考interrupt_tab.h和process.c。
+*          M3有SCB，不需要从中断服务函数中跳转到中断处理函数的操作。
+*       3、APP目前没有提供SRAM程序，只有FLASH代码。
+*       4、读保护部分代码仅适用于，MM32SPIN2x/05系列，MM32F103_n版本，
+*                                  MM32F031_n/q版本,MM32L0xx系列，MM32L37x系列
+*       5、移植注意事项：
+*           a、修改interrupt_tab.h中的NVIC_TABLE_t结构体，中断处理程序列表和所移植芯片一致。
+*           b、启动文件中添加Interrupt_Init()的声明和调用。
+*           以上两个步骤在BootLoad和App都需要修改。
+*           c、keil中配置RAM起始地址需要把NVIC_TABLE_t的内存预留出来
+********************************************************************************************/
 //define中断处理函数指针列表，存放于0X20000000
 //在process.c中编写，并在Interrupt_Init()中对tNVIC_TABLE结构体进行初始化
 struct NVIC_TABLE_t tNVIC_TABLE __attribute__((at(0X20000000)));
@@ -137,7 +158,7 @@ static void Run_FlashCode(void)
     printf("开始执行FLASH用户代码!\r\n");
     if (((*(__IO uint32_t *)(s_tAppControlBlock.wAppAddr + 4)) & 0xFF000000) == 0x08000000) {   //判断是否为0X08XXXXXX.
         Iap_LoadApp(s_tAppControlBlock.wAppAddr);           //执行FLASH APP代码
-        printf("应用程序错误,无法执行!\r\n");
+        printf("应用程序错误,无法执行!\r\n");               //代码执行成功不会返回到此位置
     } else {
         printf("非FLASH应用程序,无法执行!\r\n");
     }
@@ -148,7 +169,7 @@ static void Run_SramCode(void)
     printf("开始执行SRAM用户代码!!\r\n");
     if (((*(__IO uint32_t *)(0X20000600 + 4)) & 0xFF000000) == 0x20000000) {
         Iap_LoadApp(0X20000600);                            //SRAM地址
-        printf("应用程序错误,无法执行!\r\n");
+        printf("应用程序错误,无法执行!\r\n");               //代码执行成功不会返回到此位置
     } else {
         printf("非SRAM应用程序,无法执行!\r\n");
     }

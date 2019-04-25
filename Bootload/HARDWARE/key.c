@@ -33,33 +33,35 @@ uint8_t Key_Scan(uint8_t chMode)
             DELAY,
             PRESS_AGAIN
         } tState;
-        uint8_t chKeyUp;
-        uint16_t hwDelay;
-    } s_tKeyCB = {START,1,0};
+        bool bLoosenFlag;               //按键按松开标志 Loosen
+        uint16_t hwDelay;               //按键延时消抖循环次数
+    } s_tKeyCB = {START,false,0};
 
     if (chMode) {
-        s_tKeyCB.chKeyUp = 1;       //支持连按
+        s_tKeyCB.bLoosenFlag = true;    //支持连按
     }
 
     switch (s_tKeyCB.tState) {
         case START:
-            s_tKeyCB.hwDelay = 0X4FFF;
+            s_tKeyCB.hwDelay = 0X4FFF;  //设置延时消抖次数
             s_tKeyCB.tState = PRESS;
             //break;
         case PRESS:
-            if (s_tKeyCB.chKeyUp && (KEY1 == 0 || WK_UP == 1 || KEY3 == 0 || KEY4 == 0)) {
-                s_tKeyCB.tState = DELAY;
+            if ( s_tKeyCB.bLoosenFlag && 
+                (KEY1 == 0 || WK_UP == 1 || KEY3 == 0 || KEY4 == 0)) {
+                s_tKeyCB.tState = DELAY;        //按键被按下，进入延时消抖状态
             } else if (KEY1 == 1 && KEY3 == 1 && KEY4 == 1 && WK_UP == 0) {
-                s_tKeyCB.chKeyUp = 1;
+                s_tKeyCB.bLoosenFlag = true;    //按键已被松开
             }
             break;
-        case DELAY:                 //延时消抖
+        case DELAY:                     //延时消抖
             if (-- s_tKeyCB.hwDelay < 1) {
                 s_tKeyCB.tState = PRESS_AGAIN;
             }
             break;
-        case PRESS_AGAIN:
-            KEY_SCAN_FSM_RESET();
+        case PRESS_AGAIN:               //延时消抖后再次检测按键是否被按下
+            s_tKeyCB.bLoosenFlag = false;
+            KEY_SCAN_FSM_RESET();       //复位状态机
             if (KEY1 == 0) {
                 return KEY1_PRES;
             }
@@ -74,5 +76,5 @@ uint8_t Key_Scan(uint8_t chMode)
             }
             break;
     }
-    return 0;                       //无按键按下
+    return KEY_NONE;                       //无按键按下
 }
