@@ -6,16 +6,13 @@ void Key_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA | RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOC, ENABLE);     //使能PORTA,PORTB,PORTC时钟
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_13;                     //PC13，K1
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;                   //设置成上拉输入
-    GPIO_Init(GPIOC, &GPIO_InitStructure);                          //初始化GPIOC13
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);     //使能PORTA,PORTB,PORTC时钟
 
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;                      //PA0,K2（WK_UP）
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_1;                      //PA0,K2（KEY2）
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;                   //设置成下拉输入
-    GPIO_Init(GPIOA, &GPIO_InitStructure);                          //初始化GPIOA0
+    GPIO_Init(GPIOB, &GPIO_InitStructure);                          //初始化GPIOA0
 
-    GPIO_InitStructure.GPIO_Pin  = (GPIO_Pin_10 | GPIO_Pin_11);     //PB10,PB11,K3,K4
+    GPIO_InitStructure.GPIO_Pin  = (GPIO_Pin_2 | GPIO_Pin_10 | GPIO_Pin_11);     //PB10,PB11,K3,K4
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;                   //PA0设置成上拉输入
     GPIO_Init(GPIOB, &GPIO_InitStructure);                          //初始化GPIOB.10,11
 }
@@ -48,9 +45,9 @@ uint8_t Key_Scan(uint8_t chMode)
             //break;
         case PRESS:
             if ( s_tKeyCB.bLoosenFlag && 
-                (KEY1 == 0 || WK_UP == 1 || KEY3 == 0 || KEY4 == 0)) {
+                (KEY1 == 1 || KEY2 == 0 || KEY3 == 0 || KEY4 == 0)) {
                 s_tKeyCB.tState = DELAY;        //按键被按下，进入延时消抖状态
-            } else if (KEY1 == 1 && KEY3 == 1 && KEY4 == 1 && WK_UP == 0) {
+            } else if (KEY1 == 0 && KEY3 == 1 && KEY4 == 1 && KEY2 == 1) {
                 s_tKeyCB.bLoosenFlag = true;    //按键已被松开
             }
             break;
@@ -62,11 +59,11 @@ uint8_t Key_Scan(uint8_t chMode)
         case PRESS_AGAIN:               //延时消抖后再次检测按键是否被按下
             s_tKeyCB.bLoosenFlag = false;
             KEY_SCAN_FSM_RESET();       //复位状态机
-            if (KEY1 == 0) {
+            if (KEY1 == 1) {
                 return KEY1_PRES;
             }
-            else if (WK_UP == 1) {
-                return WKUP_PRES;
+            else if (KEY2 == 0) {
+                return KEY2_PRES;
             }
             else if (KEY3 == 0) {
                 return KEY3_PRES;

@@ -12,6 +12,7 @@
 
 #define LED2_ON()       do{ GPIOB->BRR = 0x0010;}while(0)                     // PB4
 #define LED2_OFF()      do{ GPIOB->BSRR = 0x0010;}while(0)                       // PB4
+#define LED2_TOGGLE()   do{ GPIOB->ODR ^= 0x0010;}while(0)
 
 #define LED1_ON()       do{ GPIOB->BRR = 0x0020;}while(0)                     // PB5
 #define LED1_OFF()      do{ GPIOB->BSRR = 0x0020;}while(0)                       // PB5

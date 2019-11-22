@@ -9,8 +9,9 @@
 /******************************************************************************************
 *       程序功能：                IAP Demo
 *       芯片型号：               MM32SPIN27
-*       版本号：                    1.0
+*       版本号：                    1.1
 *       作者：                     Shawn
+*******************************************************************************************
 *       注意事项：
 *       1、本例程仅作为IAP功能参考演示，不得承担因本例程直接或间接导致的任何后果！
 *       2、本例程针对MM32 M0所作：由于读保护下RAM访问FLASH受限，因此读保护后将中断向量表拷贝
@@ -26,6 +27,18 @@
 *           b、启动文件中添加Interrupt_Init()的声明和调用。
 *           以上两个步骤在BootLoad和App都需要修改。
 *           c、keil中配置RAM起始地址需要把NVIC_TABLE_t的内存预留出来
+*********************************************************************************************
+*       1.1版本
+*       1、针对部分OS特性，增加修改支持，将SVC、PendSV、Systick等系统核中断直接在bootload中以jump的方式跳转进app中，
+*          修改实现方式参照startup_xxxxxxxx.s与下面移植注意事项。
+*       2、移植注意事项：
+*           a、start启动文件中配置几个系统中断中断服务函数偏移地址
+            例如：当APP偏移地址为0x10000时，启动文件中如下配置
+            APPADDR_NMI_Handler                       EQU      0x08010008   
+            APPADDR_HardFault_Handler                 EQU      0x0801000C   
+            APPADDR_SVC_Handler                       EQU      0x0801002C   
+            APPADDR_PendSV_Handler                    EQU      0x08010038 
+            APPADDR_SysTick_Handler                   EQU      0x0801003C 
 ********************************************************************************************/
 //define中断处理函数指针列表，存放于0X20000000
 //在process.c中编写，并在Interrupt_Init()中对tNVIC_TABLE结构体进行初始化
@@ -70,7 +83,7 @@ int main()
         s_tAppControlBlock.chKeyVal = Key_Scan(0);          //检查按键按下并返回键值
         
         switch (s_tAppControlBlock.chKeyVal) {
-            case WKUP_PRES:
+            case KEY2_PRES:
                 Upgrade_Firmware(&s_tAppControlBlock.tReceivedEvent);   //更新固件程序，子函数中等待ReceivedEvent事件
                 break;
             case KEY3_PRES:

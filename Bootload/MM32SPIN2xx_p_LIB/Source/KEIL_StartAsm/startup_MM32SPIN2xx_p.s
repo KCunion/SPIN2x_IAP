@@ -139,14 +139,26 @@ ApplicationStart
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
 
+APPADDR_NMI_Handler                       EQU      0x08010008   
+APPADDR_HardFault_Handler                 EQU      0x0801000C   
+APPADDR_SVC_Handler                       EQU      0x0801002C   
+APPADDR_PendSV_Handler                    EQU      0x08010038 
+APPADDR_SysTick_Handler                   EQU      0x0801003C 
+
 NMI_Handler     PROC
                 EXPORT  NMI_Handler                    [WEAK]
-                B       .
+                LDR R0, = APPADDR_NMI_Handler
+                LDR R1,[R0]
+                BX      R1
+                ;B       .
                 ENDP
 HardFault_Handler\
                 PROC
                 EXPORT  HardFault_Handler              [WEAK]
-                B       .
+                LDR R0, = APPADDR_HardFault_Handler
+                LDR R1,[R0]
+                BX      R1
+                ;B       .
                 ENDP
 MemManage_Handler\
                 PROC
@@ -165,7 +177,10 @@ UsageFault_Handler\
                 ENDP
 SVC_Handler  PROC
                 EXPORT  SVC_Handler                    [WEAK]
-                B       .
+                LDR R0, = APPADDR_SVC_Handler
+                LDR R1,[R0]
+                BX      R1
+                ;B       .
                 ENDP
 DebugMonitor_Handler\
                 PROC
@@ -174,11 +189,17 @@ DebugMonitor_Handler\
                 ENDP
 PendSV_Handler  PROC
                 EXPORT  PendSV_Handler                 [WEAK]
-                B       .
+                LDR R0, = APPADDR_PendSV_Handler
+                LDR R1,[R0]
+                BX      R1
+                ;B       .
                 ENDP
 SysTick_Handler PROC
                 EXPORT  SysTick_Handler                [WEAK]
-                B       .
+                LDR R0, = APPADDR_SysTick_Handler
+                LDR R1,[R0]
+                BX      R1
+                ;B       .
                 ENDP
 
 Default_Handler PROC
